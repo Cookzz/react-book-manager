@@ -1,24 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route, Navigate } from "react-router-dom";
 
-function App() {
+import NavigationBar from './components/NavigationBar';
+
+import BookManager from './pages/BookManager';
+import Analytics from './pages/Analytics';
+import UserManager from './pages/UserManager';
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavigationBar />
+      <Routes>
+        <Route path="books" element={<BookManager />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="users" element={<UserManager />} />
+        <Route path="*" element={<Navigate to="/books" replace />} />
+      </Routes>
     </div>
   );
 }
