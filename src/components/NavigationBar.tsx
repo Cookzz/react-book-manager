@@ -20,8 +20,9 @@ const NavigationBar = (): JSX.Element => {
       <AppBar position="static">
         <Toolbar>
           {
-            NAVIGATION_PAGES.map((page) => (
+            NAVIGATION_PAGES.map((page, i) => (
               <Button
+                key={`nav_${i}`}
                 onClick={()=>{ goToPage(page) }}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
