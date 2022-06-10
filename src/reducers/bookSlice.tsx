@@ -3,15 +3,12 @@ import { RootState } from '../store/store'
 import { BOOKS } from '../constants/AppConstants'
 
 export interface Book {
-  id: Number;
-  title: String;
-  subtitle: String;
-  description: String;
-  genre: String;
-  author: String;
-  publisher: String;
-  published_date: String;
-  url: String;
+  title: string;
+  subtitle: string;
+  genre: string;
+  author: string;
+  publisher: string;
+  published_date: string;
   owner: any;
 }
 
@@ -30,11 +27,9 @@ export const bookSlice = createSlice({
     add: (state: BooksState, action: PayloadAction<Book>) => {
       state.bookList.push(action.payload)
     },
-    remove: (state: BooksState, action: PayloadAction<Number>) => {
+    remove: (state: BooksState, action: PayloadAction<number>) => {
       const bookList = state.bookList
-      const bookId = action.payload
-
-      const bookIndex = bookList.findIndex(book => book.id === bookId)
+      const bookIndex = action.payload
 
       bookList.splice(bookIndex, 1)
 

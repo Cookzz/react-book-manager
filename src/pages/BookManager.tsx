@@ -1,9 +1,12 @@
 import React, {
   useEffect,
-  useState
+  useState,
+  useMemo
 } from 'react';
 
-import Table from '../components/Table';
+import CustomTable from '../components/CustomTable';
+
+import { createColumnData } from '../utils/FormatUtils';
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
@@ -15,37 +18,15 @@ const BookManager = (props:any): JSX.Element => {
   const dispatch = useAppDispatch()
   const bookList = useAppSelector(selectBookList)
 
-  const data = React.useMemo(() => [
-    {
-      col1: 'Hello',
-      col2: 'World',
-    },
-    {
-      col1: 'react-table',
-      col2: 'rocks',
-    },
-    {
-      col1: 'whatever',
-      col2: 'you want',
-    },
-  ], [])
+  const data = useMemo(() => bookList, [bookList])
   
-  const columns = React.useMemo(() => [
-    {
-      Header: 'Column 1',
-      accessor: 'col1', // accessor is the "key" in the data
-    },
-    {
-      Header: 'Column 2',
-      accessor: 'col2',
-    },
-  ], [])
+  const columns = useMemo(() => createColumnData(bookList), [bookList])
 
   return (
     <>
       <main className="container">
         <h2>Welcome to the Book Manager!</h2>
-        <Table columns={columns} data={data} />
+        <CustomTable rows={data} columns={columns} />
       </main>
     </>
   );
