@@ -6,27 +6,33 @@ import React, {
 
 import CustomTable from '../components/CustomTable';
 
-import { createColumnData } from '../utils/FormatUtils';
+import { createRowData, createColumnData } from '../utils/FormatUtils';
 
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
 import { selectBookList } from '../reducers/bookSlice';
+import { selectUser } from '../reducers/userSlice';
 
 import './BookManager.css'
 
 const BookManager = (props:any): JSX.Element => {
-  const dispatch = useAppDispatch()
   const bookList = useAppSelector(selectBookList)
+  const user = useAppSelector(selectUser)
 
-  const data = useMemo(() => bookList, [bookList])
+  const rows = useMemo(() => createRowData(bookList, ["id"]), [bookList])
   
-  const columns = useMemo(() => createColumnData(bookList), [bookList])
+  const columns = useMemo(() => createColumnData(bookList, ["id"]), [bookList])
 
   return (
     <>
       <main className="container">
-        <h2>Welcome to the Book Manager!</h2>
-        <CustomTable rows={data} columns={columns} />
+        <h2>Welcome to the Book Manager, {user.name}!</h2>
+        <CustomTable 
+          title={'Books'}
+          rows={rows} 
+          columns={columns}
+          data={bookList}
+        />
       </main>
     </>
   );

@@ -1,30 +1,39 @@
 import React, {
   useState,
+  useEffect,
   MouseEvent,
   ChangeEvent
 } from 'react';
 import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import {
+  Box,
+  Button,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TableSortLabel,
+  Toolbar,
+  Typography,
+  Paper,
+  Checkbox,
+  IconButton,
+  Tooltip
+} from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/SearchOutlined';
+import AddIcon from '@mui/icons-material/Add'
 import { visuallyHidden } from '@mui/utils';
 
+import { useNavigate } from "react-router-dom";
+
 import { Book } from '../reducers/bookSlice'
+
+import './CustomTable.css'
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -134,11 +143,13 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
 }
 
 interface EnhancedTableToolbarProps {
+  title: string;
+  onSearch: any;
   numSelected: number;
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected } = props;
+  const { title, numSelected, onSearch } = props;
 
   return (
     <Toolbar
@@ -167,7 +178,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           id="tableTitle"
           component="div"
         >
-          Books
+          {title}
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -177,11 +188,10 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+          <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+          <TextField id="search" label="Search" variant="standard" onChange={onSearch} />
+        </Box>
       )}
     </Toolbar>
   );
@@ -194,7 +204,17 @@ const CustomTable = (props:any) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const { rows, columns } = props
+  const [rows, setRows] = useState([])
+  const [columns, setColumns] = useState([])
+  const [data, setData] = useState([])
+
+  const navigate = useNavigate()
+
+  useEffect(()=>{
+    setRows(props.rows)
+    setColumns(props.columns)
+    setData(props.data)
+  }, [props.rows, props.columns, props.data])
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: keyof Book) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -240,6 +260,29 @@ const CustomTable = (props:any) => {
     setPage(0);
   };
 
+  const handleSearchInput = (event: ChangeEvent<HTMLInputElement>, rowData: any) => {
+    const searchInput = event.target.value;
+
+    if (searchInput !== ''){
+      const searchResults = rowData.filter((row: any)=>{
+        return Object.values(row)
+                      .some((value: any) => (value.toString().toLowerCase()).includes(searchInput.toLowerCase()))
+      })
+  
+      setRows(searchResults)
+    } else {
+      setRows(props.rows)
+    }
+  }
+
+  const handleOnAdd = () => {
+    navigate('/books/create')
+  }
+
+  const handleOnRowClicked = (rowData: any) => {
+
+  }
+
   const isSelected = (index: any) => selected.indexOf(index) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -248,8 +291,24 @@ const CustomTable = (props:any) => {
 
   return (
     <Box sx={{ width: '100%' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button 
+          className="addBtn" 
+          size='large' 
+          sx={{justifyContent: 'flex-end'}} 
+          variant="text" 
+          startIcon={<AddIcon />}
+          onClick={handleOnAdd}
+        >
+          Add New
+        </Button>
+      </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar 
+          title={props.title}
+          numSelected={selected.length} 
+          onSearch={(event: any)=>handleSearchInput(event, rows)} 
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -273,21 +332,23 @@ const CustomTable = (props:any) => {
                 .map((row, index) => {
                   const isItemSelected = isSelected(index);
                   const labelId = `enhanced-table-checkbox-${index}`;
+                  const subLabelId = `enhanced-table-field-${index}`;
+                  const fixedWidth = (95/(Object.keys(columns).length))
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, index)}
-                      role="checkbox"
+                      onClick={() => handleOnRowClicked(data[index])}
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={index}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell key={labelId} style={{width:"5%"}} role={"checkbox"} padding="checkbox">
                         <Checkbox
                           color="primary"
                           checked={isItemSelected}
+                          onClick={(event) => handleClick(event, index)}
                           inputProps={{
                             'aria-labelledby': labelId,
                           }}
@@ -297,9 +358,9 @@ const CustomTable = (props:any) => {
                         if (i === 0){
                           return (
                             <TableCell
-                              key={labelId}
+                              style={{width: `${fixedWidth}%`}}
                               component="th"
-                              id={labelId}
+                              id={`${subLabelId}_${i}`}
                               scope="row"
                               padding="none"
                             >
@@ -308,11 +369,8 @@ const CustomTable = (props:any) => {
                           )
                         }
 
-                        return (<TableCell key={labelId} align="left">{value}</TableCell>)
+                        return (<TableCell key={`${subLabelId}_${i}`} style={{width: `${fixedWidth}%`}} align="left">{value}</TableCell>)
                       })}
-                      <TableCell align="left">
-                        <Button variant="contained">Update</Button>
-                      </TableCell>
                     </TableRow>
                   );
                 })}
