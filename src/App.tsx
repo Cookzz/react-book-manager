@@ -26,7 +26,8 @@ const Home = () => (
     <NavigationBar />
     <Routes>
       <Route path="books" element={<BookManager />} />
-      <Route path="books/create" element={<BookDetails />} />
+      <Route path="books/:type" element={<BookDetails />} />
+      <Route path="books/:type/:id" element={<BookDetails />} />
       <Route path="analytics" element={<Analytics />} />
       <Route path="users" element={<UserManager />} />
       <Route path="*" element={<Navigate to="/books" replace />} />
