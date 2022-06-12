@@ -29,13 +29,14 @@ import SearchIcon from '@mui/icons-material/SearchOutlined';
 import AddIcon from '@mui/icons-material/Add'
 import { visuallyHidden } from '@mui/utils';
 
-import { useNavigate } from "react-router-dom";
-
 import { Book } from '../reducers/bookSlice'
+
+import { isObject } from '../utils/FormatUtils';
 
 import './CustomTable.css'
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+  
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -145,6 +146,7 @@ const EnhancedTableHead = (props: EnhancedTableProps) => {
 interface EnhancedTableToolbarProps {
   title: string;
   onSearch: any;
+  handleOnDeletePress: any
   numSelected: number;
 }
 
@@ -181,10 +183,10 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
           {title}
         </Typography>
       )}
-      {numSelected > 0 ? (
+      {(numSelected > 0 && props?.handleOnDeletePress) ? (
         <Tooltip title="Delete">
           <IconButton>
-            <DeleteIcon />
+            <DeleteIcon onClick={props.handleOnDeletePress} />
           </IconButton>
         </Tooltip>
       ) : (
@@ -206,15 +208,19 @@ const CustomTable = (props:any) => {
 
   const [rows, setRows] = useState([])
   const [columns, setColumns] = useState([])
-  const [data, setData] = useState([])
-
-  const navigate = useNavigate()
+  const [data, setData]: any = useState([])
 
   useEffect(()=>{
     setRows(props.rows)
     setColumns(props.columns)
     setData(props.data)
   }, [props.rows, props.columns, props.data])
+
+  useEffect(()=>{
+    const sortedData = stableSort(props.data, getComparator(order, orderBy))
+    const newData = [...sortedData]
+    setData(newData)
+  }, [props.data, order])
 
   const handleRequestSort = (event: MouseEvent<unknown>, property: keyof Book) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -266,21 +272,34 @@ const CustomTable = (props:any) => {
     if (searchInput !== ''){
       const searchResults = rowData.filter((row: any)=>{
         return Object.values(row)
-                      .some((value: any) => (value.toString().toLowerCase()).includes(searchInput.toLowerCase()))
+                      .some((value: any) => {
+                        const newValue = isObject(value) ? value.label : (value || "")
+
+                        return (newValue.toString().toLowerCase()).includes(searchInput.toLowerCase())
+                      })
+      })
+      const dataResults = data.filter((row: any)=>{
+        return Object.values(row)
+                      .some((value: any) => {
+                        const newValue = isObject(value) ? value.label : (value || "")
+
+                        return (newValue.toString().toLowerCase()).includes(searchInput.toLowerCase())
+                      })
       })
   
       setRows(searchResults)
+      setData(dataResults)
     } else {
       setRows(props.rows)
+      setData(props.data)
     }
   }
 
-  const handleOnAdd = () => {
-    navigate('/books/create')
-  }
-
   const handleOnRowClicked = (rowData: any) => {
-
+    //only go to update page if user is allowed to
+    if (props?.handleRowClicked){
+      props.handleRowClicked(rowData)
+    }
   }
 
   const isSelected = (index: any) => selected.indexOf(index) !== -1;
@@ -291,20 +310,23 @@ const CustomTable = (props:any) => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button 
-          className="addBtn" 
-          size='large' 
-          sx={{justifyContent: 'flex-end'}} 
-          variant="text" 
-          startIcon={<AddIcon />}
-          onClick={handleOnAdd}
-        >
-          Add New
-        </Button>
-      </Box>
+      {props?.handleOnAdd &&
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button 
+            className="addBtn" 
+            size='large' 
+            sx={{justifyContent: 'flex-end'}} 
+            variant="text" 
+            startIcon={<AddIcon />}
+            onClick={props.handleOnAdd}
+          >
+            Add New
+          </Button>
+        </Box>
+      }
       <Paper sx={{ width: '100%', mb: 2 }}>
         <EnhancedTableToolbar 
+          handleOnDeletePress={props.onDeletePressed}
           title={props.title}
           numSelected={selected.length} 
           onSearch={(event: any)=>handleSearchInput(event, rows)} 
@@ -338,14 +360,21 @@ const CustomTable = (props:any) => {
                   return (
                     <TableRow
                       hover
-                      onClick={() => handleOnRowClicked(data[index])}
+                      onClick={(event: any) => {
+                        if (event.target.name !== "delete_checkbox"){
+                          handleOnRowClicked(data[index])
+                        }
+                      }}
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={index}
+                      key={`row_${index}`}
                       selected={isItemSelected}
                     >
-                      <TableCell key={labelId} style={{width:"5%"}} role={"checkbox"} padding="checkbox">
+                      <TableCell key={`${labelId}_container`} style={{width:"5%"}} role={"checkbox"} padding="checkbox">
                         <Checkbox
+                          name={"delete_checkbox"}
+                          sx={{zIndex: 2}}
+                          key={labelId}
                           color="primary"
                           checked={isItemSelected}
                           onClick={(event) => handleClick(event, index)}
@@ -354,22 +383,29 @@ const CustomTable = (props:any) => {
                           }}
                         />
                       </TableCell>
-                      {Object.values(row).map((value, i)=>{
+                      {Object.values(row).map((value: any, i)=>{
                         if (i === 0){
                           return (
                             <TableCell
                               style={{width: `${fixedWidth}%`}}
                               component="th"
+                              key={`${subLabelId}_${i}`}
                               id={`${subLabelId}_${i}`}
                               scope="row"
                               padding="none"
                             >
-                              {value}
+                              {(value?.label || value || "")}
                             </TableCell>
                           )
                         }
 
-                        return (<TableCell key={`${subLabelId}_${i}`} style={{width: `${fixedWidth}%`}} align="left">{value}</TableCell>)
+                        return (
+                          <TableCell 
+                            key={`${subLabelId}_${i}`} style={{width: `${fixedWidth}%`}} align="left"
+                          >
+                            {(value?.label || value || "")}
+                          </TableCell>
+                        )
                       })}
                     </TableRow>
                   );
