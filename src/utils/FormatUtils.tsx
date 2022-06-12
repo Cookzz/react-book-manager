@@ -36,3 +36,46 @@ export const createRowData = (data: Array<Object>, filterList: Array<string> = [
 
   return rows;
 }
+
+//same function but can be customized later
+export const filterObj = (data: any, filterList: Array<string> = []) => {
+  if (data.length === 0){
+    return {}
+  }
+
+  let newObj: any = {};
+
+  if (filterList.length > 0){
+    Object.keys(data).forEach((key: any) => {
+      if (!filterList.some(v => v === key)){
+        newObj[key] = data[key]
+      }
+    })
+  } else {
+    newObj = data
+  }
+
+  return newObj;
+}
+
+const labelByKey: any = {
+  title: 'Title',
+  subtitle: 'Subtitle',
+  genre: 'Genre',
+  author: 'Author',
+  publisher: 'Publisher',
+  published_year: 'Year Published',
+  owner: "Borrower"
+}
+
+export const getLabel = (key: string): string => {
+  return (labelByKey?.[key] || '')
+}
+
+export const isObject = (value: any) => {
+  return (
+    typeof value === 'object' &&
+    !Array.isArray(value) &&
+    value !== null
+  )
+}
