@@ -85,7 +85,11 @@ export const userLogout = () => (dispatch: any) => {
   dispatch(logout())
 }
 
-export const removeUser = (bookObj: any) => (dispatch: any, getState: any) => {
+export const addUser = (userObj: any) => (dispatch: any, getState: any) => {
+  
+}
+
+export const removeUser = (userObj: any) => (dispatch: any, getState: any) => {
   
 }
 
