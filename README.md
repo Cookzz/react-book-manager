@@ -82,31 +82,31 @@ This was only setup due to the lack of typescript support for react redux, so th
 
 The project file structure is split up into 7 different "parts"/folders
 
-1. Components
+#### Components
 
   This folder is made to create any custom, reusable components. 
 
   While there are existing React UI Libraries like react-bootstrap and Material UI, there are some cases where their components lack some level of customizations or for example, like the CustomTable Component, would require importing and putting together many different components before building an actual functional table.
 
-2. Constants
+#### Constants
 
   This folder is made (instead of a constant file) are for cases where there are values that remains unchanged and/or are hardcoded, so many different constant files can be made - for example: a constants file just to export some variables that enable/different certain functionality or a constants file that stores hardcoded user data.
 
-3. Pages
+#### Pages
 
   This folder is to create every individual page - not to be mistaken with components that are considered "part" of the page, it is only made when users can navigate to that particular page. 
   
   Files that are created in the main *pages/* directory are the parent pages or dashboards of their individual sections and then there are sub-directories like *pages/books/* and *pages/users/* that are the child pages of their parent. For example, the files in **pages/books* directory are "child pages" under BookManager page.
 
-4. Reducers
+#### Reducers
 
   As explained in the redux section, this folder is only here to store a specific set of data - for example, userSlice is created to store, update, delete and retrieve any data that is related to the user. The rest of the "slices" are also the same. The rootReducer is only to combine reducers/slices and export them to the store.
 
-5. redux & store
+#### redux & store
 
   The *redux* directory only has one purpose and it is to convert a non-typescript supported useDispatch() and useSelector() to a typescript-friendly one. For the *store* directory, it is only to store one *store.tsx* file that handles configurations that are related to redux store - things like redux-persist for example.
 
-6. Utils
+#### Utils
 
   The *utils* folder is also known as the utility folder - this directory is mainly to create reusable external functions for different purposes. At the moment, there is only *FormatUtils.tsx* which handles all of the functions related to formatting data and that is why there are various functions like filterObj, createRowData, etc.
 
