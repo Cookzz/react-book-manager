@@ -10,7 +10,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Marijn Haverbeke",
   "published_year":2018,
   "publisher":"No Starch Press",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 2,
@@ -20,7 +20,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Nicolás Bevacqua",
   "published_year":2017,
   "publisher":"O'Reilly Media",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 3,
@@ -30,7 +30,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Nicholas C. Zakas",
   "published_year":2016,
   "publisher":"No Starch Press",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 4,
@@ -40,7 +40,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Axel Rauschmayer",
   "published_year":2014,
   "publisher":"O'Reilly Media",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 5,
@@ -50,7 +50,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Addy Osmani",
   "published_year":2012,
   "publisher":"O'Reilly Media",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 6,
@@ -60,7 +60,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Kyle Simpson",
   "published_year":2020,
   "publisher":"Independently published",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 7,
@@ -70,7 +70,7 @@ export const BOOKS: Array<Book> = [{
   "author":"Scott Chacon and Ben Straub",
   "published_year": 2014,
   "publisher":"Apress; 2nd edition",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 8,
@@ -80,47 +80,47 @@ export const BOOKS: Array<Book> = [{
   "author":"Caitlin Sadowski, Thomas Zimmermann",
   "published_year": 2019,
   "publisher":"Apress",
-  "owner": null
+  "owner": undefined
 },
 {
   "id": 9,
-  "author": "Chinua Achebe",
   "title": "Things Fall Apart",
   "subtitle":"",
   "genre": "History",
-  "publisher":"William Heinemann Ltd.",
+  "author": "Chinua Achebe",
   "published_year": 1958,
-  "owner": null
+  "publisher":"William Heinemann Ltd.",
+  "owner": undefined
 },
 {
   "id": 10,
-  "author": "Hans Christian Andersen",
   "title": "Fairy tales",
   "subtitle":"",
   "genre": "Literary fairy tale",
-  "publisher":"C. A. Reitzel",
+  "author": "Hans Christian Andersen",
   "published_year": 1836,
-  "owner": null
+  "publisher":"C. A. Reitzel",
+  "owner": undefined
 },
 {
   "id": 11,
-  "author": "Dante Alighieri",
   "title": "The Divine Comedy",
   "subtitle":"",
   "genre": "History",
-  "publisher":"Gabriel Giolito",
+  "author": "Dante Alighieri",
   "published_year": 1315,
-  "owner": null
+  "publisher":"Gabriel Giolito",
+  "owner": undefined
 },
 {
   "id": 12,
-  "author": "Unknown",
   "title": "The Epic Of Gilgamesh",
   "subtitle":"",
   "genre": "History",
+  "author": "Unknown",
+  "published_year": 1700,
   "publisher":"Bolchazy-Carducci Publishers.",
-  "published_year": -1700,
-  "owner": null
+  "owner": undefined
 },]
 
 //password shouldn't be stored in plaintext. if locally stored, please encrypt it
